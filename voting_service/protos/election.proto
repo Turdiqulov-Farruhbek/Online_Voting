@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package protos;
+option go_package = "/vote;vote";
+
+message Election {
+  string id = 1; 
+  string name = 2;
+  string open_date = 3;
+  string end_date = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  int64 deleted_at = 7; 
+}

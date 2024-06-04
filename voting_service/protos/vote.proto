@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package protos;
+option go_package = "/vote;vote";
+
+message Vote {
+  string id = 1;
+  string candidate_id = 2;
+  string created_at = 3;
+}
