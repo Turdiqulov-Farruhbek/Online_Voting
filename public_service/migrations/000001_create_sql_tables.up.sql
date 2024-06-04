@@ -3,8 +3,11 @@ CREATE TABLE party(
     name VARCHAR(256),
     slogan VARCHAR,
     opened_date DATE,
-    description VARCHAR
-)
+    description VARCHAR,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    deleted_at BIGINT DEFAULT 0
+);
 
 CREATE TYPE gender AS ENUM ('m', 'f');
 CREATE TABLE public(
@@ -15,7 +18,7 @@ CREATE TABLE public(
     email VARCHAR(64) UNIQUE,
     birthday DATE,
     gender gender,
-    party_id REFERENCES party(id)
+    party_id UUID REFERENCES party(id) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at BIGINT DEFAULT 0
