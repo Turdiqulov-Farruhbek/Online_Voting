@@ -1,7 +1,8 @@
 CREATE TABLE election(
     id UUID PRIMARY KEY,
     name VARCHAR(256),
-    date DATE,
+    open_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     deleted_at BIGINT DEFAULT 0
