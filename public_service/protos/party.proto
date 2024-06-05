@@ -3,6 +3,14 @@ syntax = "proto3";
 package protos;
 option go_package = "/public;public";
 
+service PartyService{
+    rpc Create(PartyCreate) returns (Void){};
+    rpc Update(PartyUpdate) returns (Void){};
+    rpc Delete(PartyDelete) returns (Void){};
+    rpc GetById(PartyById) returns (Party){};
+    rpc GetAll(GetAllPartyRequest) returns (GetAllPartyResponse){};
+}
+message Void{}
 message Party {
     string id = 1; 
     string name = 2;
@@ -12,4 +20,43 @@ message Party {
     string created_at = 6;
     string updated_at = 7;
     int64 deleted_at = 8; 
+
+}
+
+
+message PartyCreate {
+    string id = 1; 
+    string name = 2;
+    string slogan = 3;
+    string opened_date = 4; 
+    string description = 5; 
+}
+
+
+message PartyUpdate {
+    string id = 1; 
+    string name = 2;
+    string slogan = 3;
+    string opened_date = 4; 
+    string description = 5; 
+}
+
+message PartyDelete {
+    string id = 1; 
+}
+
+
+message PartyById {
+    string id = 1; 
+}
+
+message GetAllPartyRequest{
+    string opened_date = 1;
+    string name = 2;
+    string slogan = 3;
+    string description = 4; 
+}
+
+message GetAllPartyResponse{
+    repeated Party parties = 1;
 }

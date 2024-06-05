@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/vote;vote";
+option go_package = "/Genproto";
+import "protos/candidate.proto";
 
 message Election {
   string id = 1; 
@@ -11,4 +12,54 @@ message Election {
   string created_at = 5;
   string updated_at = 6;
   int64 deleted_at = 7; 
+}
+
+service ElectionService {
+  // Create a new election
+  rpc Create(ElectionCreate) returns (Void) {};
+  // Update an existing election
+  rpc Update(ElectionUpdate) returns (Void) {};
+  // Delete an existing election
+  rpc Delete(ElectionDelete) returns (Void) {};
+  // Get an election by its ID
+  rpc GetById(ElectionById) returns (Election) {};
+  // Get all elections
+  rpc GetAll(GetAllElectionReq) returns (GetAllElectionRes) {};
+}
+
+// Request for creating a new election
+message ElectionCreate {
+  string name = 1;
+  string open_date = 2;
+  string end_date = 3;
+}
+
+// Request for updating an existing election
+message ElectionUpdate {
+  string id = 1;
+  string name = 2;
+  string open_date = 3;
+  string end_date = 4;
+}
+
+// Request for deleting an existing election
+message ElectionDelete {
+  string id = 1;
+}
+
+// Request for getting an election by its ID
+message ElectionById {
+  string id = 1;
+}
+
+// Request for getting all elections
+message GetAllElectionReq {
+  string name = 1; 
+  string open_date = 3;
+  string end_date = 4;
+}
+
+// Response for getting all elections
+message GetAllElectionRes {
+  repeated Election elections = 1;
 }

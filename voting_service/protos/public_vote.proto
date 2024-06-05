@@ -1,11 +1,45 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/vote;vote";
+option go_package = "/Genproto";
+import "protos/candidate.proto";
 
 message PublicVote {
   string id = 1; 
   string election_id = 2; 
   string public_id = 3; 
   string created_at = 4;
+}
+
+service PublicVoteService {
+  // Create a new public vote
+  rpc Create(PublicVoteCreate) returns (Void) {};
+  // Get a public vote by its ID
+  rpc GetById(PublicVoteById) returns (PublicVote) {};
+  // Get all public votes
+  rpc GetAll(GetAllPublicVoteReq) returns (GetAllPublicVoteRes) {};
+}
+
+// Request for creating a new public vote
+message PublicVoteCreate {
+  string election_id = 1;
+  string public_id = 2; 
+}
+
+// Request for getting a public vote by its ID
+message PublicVoteById {
+  string id = 1;
+}
+
+// Request for getting all public votes
+message GetAllPublicVoteReq {
+  // Optional filter for election ID
+  string election_id = 1; 
+  // Optional filter for public ID
+  string public_id = 2; 
+}
+
+// Response for getting all public votes
+message GetAllPublicVoteRes {
+  repeated PublicVote public_votes = 1;
 }

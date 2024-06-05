@@ -3,6 +3,13 @@ syntax = "proto3";
 package protos;
 option go_package = "/public;public";
 
+service PublicService{ 
+    Create(PublicCreate) returns (Void){};
+    Update(PublicUpdate) returns (Void){};
+    Delete(PublicDelete) returns (Void){};
+    GetById(PublicById) returns (Public){};
+    GetAll(GetAllPublicReq) returns (GetAllPublicRes){};
+}
 message Public {
     string id = 1; 
     string name = 2;
@@ -15,4 +22,48 @@ message Public {
     string created_at = 9;
     string updated_at = 10;
     int64 deleted_at = 11; 
+}
+
+message PublicCreate {
+    string id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+    string party_id = 8; 
+}
+
+message PublicUpdate {
+    string id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+    string party_id = 8; 
+}
+
+message PublicDelete{
+    string id = 1;
+}
+
+message PublicById{
+    string id = 1;
+}
+
+message GetAllPublicReq{ 
+    string party_id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+}
+
+message GetAllPublicRes{
+    repeated Public publics = 1;
 }
