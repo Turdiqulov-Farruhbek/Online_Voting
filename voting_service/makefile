@@ -30,8 +30,8 @@ gen-proto:
 
 gen-protoAll:
 #proto fileni hammasini bittada generatsiya qilish 
-  protoc --go_out=genproto/ \
-    --go-grpc_out=genproto/ \
+  protoc --go_out=./ \
+    --go-grpc_out=./ \
     protos/*.proto
 
 

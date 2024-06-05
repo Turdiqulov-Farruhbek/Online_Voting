@@ -1,8 +1,8 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/Genproto";
-import "protos/candidate.proto";
+option go_package = "/genproto;vote";
+
 
 message PublicVote {
   string id = 1; 
@@ -13,11 +13,12 @@ message PublicVote {
 
 service PublicVoteService {
   // Create a new public vote
-  rpc Create(PublicVoteCreate) returns (Void) {};
+  rpc Create(PublicVoteCreate) returns (PublicVote) {};
   // Get a public vote by its ID
   rpc GetById(PublicVoteById) returns (PublicVote) {};
   // Get all public votes
   rpc GetAll(GetAllPublicVoteReq) returns (GetAllPublicVoteRes) {};
+
 }
 
 // Request for creating a new public vote
@@ -42,4 +43,5 @@ message GetAllPublicVoteReq {
 // Response for getting all public votes
 message GetAllPublicVoteRes {
   repeated PublicVote public_votes = 1;
+  int32 count = 2;
 }

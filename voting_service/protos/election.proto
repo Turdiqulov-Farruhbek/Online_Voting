@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/Genproto";
+option go_package = "/genproto;vote";
 import "protos/candidate.proto";
 
 message Election {
@@ -16,7 +16,7 @@ message Election {
 
 service ElectionService {
   // Create a new election
-  rpc Create(ElectionCreate) returns (Void) {};
+  rpc Create(ElectionCreate) returns (Election) {};
   // Update an existing election
   rpc Update(ElectionUpdate) returns (Void) {};
   // Delete an existing election
@@ -25,6 +25,21 @@ service ElectionService {
   rpc GetById(ElectionById) returns (Election) {};
   // Get all elections
   rpc GetAll(GetAllElectionReq) returns (GetAllElectionRes) {};
+  // Get election result
+  rpc GetCandidateVoes(GetCandidateVotesReq) returns (GetCandidateVotesRes){};
+}
+// Request for getting election reuslts
+message GetCandidateVotesReq{
+  string id = 1;
+}
+// Response for getting election rusults
+message GetCandidateVotesRes{
+  repeated CandidateElectionRes candidateRes = 1;
+}
+
+message CandidateElectionRes{
+  string candidate_id = 1;
+  int64 count = 2;
 }
 
 // Request for creating a new election
@@ -62,4 +77,5 @@ message GetAllElectionReq {
 // Response for getting all elections
 message GetAllElectionRes {
   repeated Election elections = 1;
+  int64 count = 2;
 }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package protos;
 
-option go_package = "/Genproto";
+option go_package = "/genproto;vote";
 
 
 message Candidate {
@@ -15,7 +15,7 @@ message Candidate {
 }
 message Void{}
 service CandidateService {
-  rpc Create(CandidateCreate) returns (Void){};
+  rpc Create(CandidateCreate) returns (Candidate){};
   rpc Update(CandidateUpdate) returns (Void){};
   rpc Delete(CandidateDelete) returns (Void){};
   rpc GetById(CandidateById) returns (Candidate){};
@@ -48,4 +48,5 @@ message GetAllCandidateReq{
 
 message GetAllCandidateRes{
   repeated Candidate candidates = 1;
+  int64 count = 2;
 }

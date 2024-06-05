@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/Genproto";
+option go_package = "/genproto;vote";
 import "protos/candidate.proto";
 
 message Vote {
@@ -12,7 +12,7 @@ message Vote {
 
 service VoteService {
   // Create a new vote
-  rpc Create(VoteCreate) returns (Void) {};
+  rpc Create(VoteCreate) returns (Vote) {};
   // Get a vote by its ID
   rpc GetById(VoteById) returns (Void) {};
   // Get all votes
@@ -38,4 +38,5 @@ message GetAllVoteReq {
 // Response for getting all votes
 message GetAllVoteRes {
   repeated Vote votes = 1;
+  int32 count = 2;
 }
