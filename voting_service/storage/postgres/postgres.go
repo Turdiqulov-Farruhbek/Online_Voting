@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"log/slog"
 	"vote/config"
+	"vote/storage"
 
 	"github.com/jackc/pgx/v5"
 )
 
 type Storage struct {
-	Candidate  *CandidateDb
-	Election   *ElectionDb
-	PublicVote *PublicVote
-	Vote       *Vote
+	Db          *pgx.Conn
+	CandidateS  storage.CandidateI
+	ElectionS   storage.ElectionI
+	PublicVoteS storage.PublicVoteI
+	VoteS       storage.VoteI
 }
 
 func DBConn() (*Storage, error) {
@@ -44,9 +46,37 @@ func DBConn() (*Storage, error) {
 	pbv := NewPublicVote(db)
 	vt := NewVote(db)
 	return &Storage{
-		Candidate:  cd,
-		Election:   el,
-		PublicVote: pbv,
-		Vote:       vt,
+		CandidateS:  cd,
+		ElectionS:   el,
+		PublicVoteS: pbv,
+		VoteS:       vt,
 	}, err
+}
+
+func (s *Storage) Election() storage.ElectionI {
+	if s.ElectionS == nil {
+		s.ElectionS = NewElection(s.Db)
+	}
+	return s.ElectionS
+}
+
+func (s *Storage) Candidate() storage.CandidateI {
+	if s.CandidateS == nil {
+		s.CandidateS = NewCandidate(s.Db)
+	}
+	return s.CandidateS
+}
+
+func (s *Storage) Vote() storage.VoteI {
+	if s.VoteS == nil {
+		s.VoteS = NewVote(s.Db)
+	}
+	return s.VoteS
+}
+
+func (s *Storage) PublicVote() storage.PublicVoteI {
+	if s.PublicVoteS == nil {
+		s.PublicVoteS = NewPublicVote(s.Db)
+	}
+	return s.PublicVoteS
 }

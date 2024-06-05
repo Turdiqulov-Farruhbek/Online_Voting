@@ -24,6 +24,7 @@ func main() {
 
 	s := grpc.NewServer()
 	vote.RegisterElectionServiceServer(s, service.NewElectionService(db))
+	vote.RegisterCandidateServiceServer(s, service.NewCandidateService(db))
 	log.Printf("server listening at %v", liss.Addr())
 	if err := s.Serve(liss); err != nil {
 		log.Fatalf("failed to serve: %v", err)
