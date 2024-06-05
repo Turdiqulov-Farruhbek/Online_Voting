@@ -1,14 +1,15 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/public;public";
+option go_package = "/genproto;public";
+import "protos/party.proto";
 
 service PublicService{ 
-    Create(PublicCreate) returns (Void){};
-    Update(PublicUpdate) returns (Void){};
-    Delete(PublicDelete) returns (Void){};
-    GetById(PublicById) returns (Public){};
-    GetAll(GetAllPublicReq) returns (GetAllPublicRes){};
+    rpc Create(PublicCreate) returns (Void){};
+    rpc Update(PublicUpdate) returns (Void){};
+    rpc Delete(PublicDelete) returns (Void){};
+    rpc GetById(PublicById) returns (Public){};
+    rpc GetAll(GetAllPublicReq) returns (GetAllPublicRes){};
 }
 message Public {
     string id = 1; 

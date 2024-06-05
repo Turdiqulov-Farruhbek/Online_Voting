@@ -16,3 +16,8 @@ gen-proto:
 	protoc --go_out=. --go-grpc_out=. party.proto
 	protoc --go_out=. --go-grpc_out=. public.proto
 	
+gen-protoAll:
+#proto fileni hammasini bittada generatsiya qilish 
+	protoc --go_out=./ \
+	--go-grpc_out=./ \
+	protos/*.proto

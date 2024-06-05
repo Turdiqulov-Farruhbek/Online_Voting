@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package protos;
-option go_package = "/public;public";
+option go_package = "/genproto;public";
 
 service PartyService{
     rpc Create(PartyCreate) returns (Void){};
