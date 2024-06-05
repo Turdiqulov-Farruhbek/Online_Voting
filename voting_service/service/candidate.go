@@ -5,15 +5,15 @@ import (
 	"errors"
 	"log/slog"
 	vote "vote/genproto"
-	"vote/storage"
+	"vote/storage/postgres"
 )
 
 type CandidateService struct {
-	stg *storage.Storage
+	stg *postgres.Storage
 	vote.UnimplementedCandidateServiceServer
 }
 
-func NewCandidateService(stg *storage.Storage) *CandidateService {
+func NewCandidateService(stg *postgres.Storage) *CandidateService {
 	return &CandidateService{stg: stg}
 }
 

@@ -5,14 +5,14 @@ import (
 	"net"
 	vote "vote/genproto"
 	"vote/service"
-	"vote/storage"
+	"vote/storage/postgres"
 
 	"google.golang.org/grpc"
 )
 
 func main() {
 
-	db, err := storage.DBConn()
+	db, err := postgres.DBConn()
 	if err != nil {
 		log.Fatal(err)
 	}

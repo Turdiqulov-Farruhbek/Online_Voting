@@ -4,15 +4,15 @@ import (
 	"context"
 	"log/slog"
 	vote "vote/genproto"
-	"vote/storage"
+	"vote/storage/postgres"
 )
 
 type ElectionService struct {
-	stg *storage.Storage
+	stg *postgres.Storage
 	vote.UnimplementedElectionServiceServer
 }
 
-func NewElectionService(stg *storage.Storage) *ElectionService {
+func NewElectionService(stg *postgres.Storage) *ElectionService {
 	return &ElectionService{stg: stg}
 }
 
