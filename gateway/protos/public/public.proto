@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package protos;
+option go_package = "/public;public";
+import "github.com/online_voting_service/gateway/protos/vote/candidate.proto";
+
+service PublicService{ 
+    rpc Create(PublicCreate) returns (Void){};
+    rpc Update(PublicUpdate) returns (Void){};
+    rpc Delete(PublicDelete) returns (Void){};
+    rpc GetById(PublicById) returns (Public){};
+    rpc GetAll(GetAllPublicReq) returns (GetAllPublicRes){};
+}
+message Public {
+    string id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+    string party_id = 8; 
+    string created_at = 9;
+    string updated_at = 10;
+    int64 deleted_at = 11; 
+}
+
+message PublicCreate {
+    string id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+    string party_id = 8; 
+}
+
+message PublicUpdate {
+    string id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+    string party_id = 8; 
+}
+
+message PublicDelete{
+    string id = 1;
+}
+
+message PublicById{
+    string id = 1;
+}
+
+message GetAllPublicReq{ 
+    string party_id = 1; 
+    string name = 2;
+    string last_name = 3;
+    string phone = 4;
+    string email = 5;
+    string birthday = 6; 
+    string gender = 7; 
+}
+
+message GetAllPublicRes{
+    repeated Public publics = 1;
+}

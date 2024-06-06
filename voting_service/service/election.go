@@ -2,7 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
+	"log"
 	"log/slog"
+	"time"
 	vote "vote/genproto"
 	"vote/storage/postgres"
 )
@@ -18,6 +21,10 @@ func NewElectionService(stg *postgres.Storage) *ElectionService {
 
 func (e *ElectionService) Create(ctx context.Context, electionReq *vote.ElectionCreate) (*vote.Election, error) {
 	slog.Info("CreateElection Service", "election", electionReq)
+
+	if !ValidElectionDate(electionReq.OpenDate, electionReq.EndDate) {
+		return nil, errors.New("your election date is not valid")
+	}
 	electionRes, err := e.stg.ElectionS.Create(ctx, electionReq)
 	if err != nil {
 		slog.Error("error while CreateElection Service", "err", err)
@@ -80,4 +87,31 @@ func (e *ElectionService) GetCandidateVoes(ctx context.Context, electionReq *vot
 	}
 
 	return electionRes, nil
+}
+
+func ValidElectionDate(openDate, endDate string) bool {
+	// Parse openDate and endDate strings into time.Time objects
+	openTime, err := time.Parse("2006-01-02 15:04:05", openDate)
+	if err != nil {
+		log.Println(err)
+		return false // Invalid open date format
+	}
+
+	endTime, err := time.Parse("2006-01-02 15:04:05", endDate)
+	if err != nil {
+		log.Println(err)
+		return false // Invalid end date format
+	}
+
+	// Check if open date is later than current time
+	if openTime.Before(time.Now()) {
+		log.Println(err)
+		return false // Open date is in the past
+	}
+
+	// Check if open date is before end date
+	if openTime.After(endTime) {
+		return false // Open date is after end date
+	}
+	return true // Election dates are valid
 }

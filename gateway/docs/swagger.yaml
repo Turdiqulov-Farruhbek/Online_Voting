@@ -1,0 +1,501 @@
+basePath: /api/v1
+definitions:
+  vote.Candidate:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: integer
+      election_id:
+        type: string
+      id:
+        type: string
+      public_id:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  vote.CandidateById:
+    properties:
+      id:
+        type: string
+    type: object
+  vote.CandidateCreate:
+    properties:
+      election_id:
+        type: string
+      public_id:
+        type: string
+    type: object
+  vote.CandidateDelete:
+    properties:
+      id:
+        type: string
+    type: object
+  vote.CandidateElectionRes:
+    properties:
+      candidate_id:
+        type: string
+      count:
+        type: integer
+    type: object
+  vote.CandidateUpdate:
+    properties:
+      election_id:
+        type: string
+      id:
+        type: string
+      public_id:
+        type: string
+    type: object
+  vote.Election:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: integer
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      open_date:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  vote.ElectionById:
+    properties:
+      id:
+        type: string
+    type: object
+  vote.ElectionCreate:
+    properties:
+      end_date:
+        type: string
+      name:
+        type: string
+      open_date:
+        type: string
+    type: object
+  vote.ElectionDelete:
+    properties:
+      id:
+        type: string
+    type: object
+  vote.ElectionUpdate:
+    properties:
+      end_date:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      open_date:
+        type: string
+    type: object
+  vote.GetAllCandidateReq:
+    properties:
+      election_id:
+        type: string
+      public_id:
+        type: string
+    type: object
+  vote.GetAllCandidateRes:
+    properties:
+      candidates:
+        items:
+          $ref: '#/definitions/vote.Candidate'
+        type: array
+      count:
+        type: integer
+    type: object
+  vote.GetAllElectionReq:
+    properties:
+      end_date:
+        type: string
+      name:
+        type: string
+      open_date:
+        type: string
+    type: object
+  vote.GetAllElectionRes:
+    properties:
+      count:
+        type: integer
+      elections:
+        items:
+          $ref: '#/definitions/vote.Election'
+        type: array
+    type: object
+  vote.GetCandidateVotesReq:
+    properties:
+      id:
+        type: string
+    type: object
+  vote.GetCandidateVotesRes:
+    properties:
+      candidateRes:
+        items:
+          $ref: '#/definitions/vote.CandidateElectionRes'
+        type: array
+    type: object
+  vote.Void:
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for managing online voting system resources
+  title: Online Voting System API
+  version: "1.0"
+paths:
+  /candidate:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing candidate by ID.
+      parameters:
+      - description: Candidate data
+        in: body
+        name: candidate
+        required: true
+        schema:
+          $ref: '#/definitions/vote.CandidateDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Void'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Delete an existing candidate
+      tags:
+      - Candidates
+    post:
+      consumes:
+      - application/json
+      description: Creates a new candidate for an election.
+      parameters:
+      - description: Candidate data
+        in: body
+        name: candidate
+        required: true
+        schema:
+          $ref: '#/definitions/vote.CandidateCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Candidate'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create a new candidate
+      tags:
+      - Candidates
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing candidate.
+      parameters:
+      - description: Candidate data
+        in: body
+        name: candidate
+        required: true
+        schema:
+          $ref: '#/definitions/vote.CandidateUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Void'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Update an existing candidate
+      tags:
+      - Candidates
+  /candidate/all:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves all candidates associated with an election.
+      parameters:
+      - description: Request data
+        in: body
+        name: candidate
+        schema:
+          $ref: '#/definitions/vote.GetAllCandidateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.GetAllCandidateRes'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get all candidates
+      tags:
+      - Candidates
+  /candidate/id:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves a candidate by its ID.
+      parameters:
+      - description: Request data
+        in: body
+        name: candidate
+        required: true
+        schema:
+          $ref: '#/definitions/vote.CandidateById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Candidate'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get a candidate by its ID
+      tags:
+      - Candidates
+  /election:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an existing election by ID.
+      parameters:
+      - description: Election data
+        in: body
+        name: election
+        required: true
+        schema:
+          $ref: '#/definitions/vote.ElectionDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Void'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Delete an existing election
+      tags:
+      - Elections
+    post:
+      consumes:
+      - application/json
+      description: Creates a new election.
+      parameters:
+      - description: Election data
+        in: body
+        name: election
+        required: true
+        schema:
+          $ref: '#/definitions/vote.ElectionCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Election'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create a new election
+      tags:
+      - Elections
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing election.
+      parameters:
+      - description: Election data
+        in: body
+        name: election
+        required: true
+        schema:
+          $ref: '#/definitions/vote.ElectionUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Void'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Update an existing election
+      tags:
+      - Elections
+  /election/all:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves all elections.
+      parameters:
+      - description: Request data
+        in: body
+        name: election
+        schema:
+          $ref: '#/definitions/vote.GetAllElectionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.GetAllElectionRes'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get all elections
+      tags:
+      - Elections
+  /election/id:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves an election by its ID.
+      parameters:
+      - description: Request data
+        in: body
+        name: election
+        required: true
+        schema:
+          $ref: '#/definitions/vote.ElectionById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.Election'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get an election by its ID
+      tags:
+      - Elections
+  /election/results:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves the results of an election by its ID.
+      parameters:
+      - description: Request data
+        in: body
+        name: election
+        required: true
+        schema:
+          $ref: '#/definitions/vote.GetCandidateVotesReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.GetCandidateVotesRes'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get election results
+      tags:
+      - Elections
+swagger: "2.0"

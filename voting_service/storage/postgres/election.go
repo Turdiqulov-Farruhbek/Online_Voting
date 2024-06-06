@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 	"time"
 	vote "vote/genproto"
@@ -30,7 +31,7 @@ func NewElection(db *pgx.Conn) *ElectionDb {
 func (Electiondb *ElectionDb) Create(ctx context.Context, election *vote.ElectionCreate) (*vote.Election, error) {
 	// Generate a new UUID for the election
 	electionID := uuid.New().String()
-
+	log.Println(election.Name)
 	// Parse the open date and end date from strings to time.Time
 	openDate, err := time.Parse("2006-01-02 15:04:05", election.OpenDate)
 	if err != nil {
@@ -344,7 +345,7 @@ func (Electiondb *ElectionDb) GetCandidateVotes(ctx context.Context, req *vote.G
 		LEFT JOIN 
 			vote v ON c.id = v.candidate_id
 		WHERE 
-			v.election_id = $1 
+			c.election_id = $1 
 		GROUP BY 
 			c.id
 	`

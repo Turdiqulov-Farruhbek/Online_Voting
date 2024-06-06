@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
 	"log/slog"
 	vote "vote/genproto"
 	"vote/storage/postgres"
@@ -20,12 +21,10 @@ func NewCandidateService(stg *postgres.Storage) *CandidateService {
 func (c *CandidateService) Create(ctx context.Context, candidateReq *vote.CandidateCreate) (*vote.Candidate, error) {
 	slog.Info("CreateCandidate Service", "candidate", candidateReq)
 	valElection, err := c.stg.ElectionS.ValidElectionDate(ctx, &candidateReq.ElectionId)
-	if err != nil || valElection {
+	log.Println(valElection)
+	if err != nil || !valElection {
 		slog.Error("this election date is not valid")
-		if !valElection {
-			return nil, errors.New("this election date is not valid")
-		}
-		return nil, err
+		return nil, errors.New("this election date is not valid")
 	}
 	candidateRes, err := c.stg.CandidateS.Create(ctx, candidateReq)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"log/slog"
 	"time"
 	vote "vote/genproto"
@@ -30,7 +31,7 @@ func NewCandidate(db *pgx.Conn) *CandidateDb {
 func (CandidateDb *CandidateDb) Create(ctx context.Context, candidate *vote.CandidateCreate) (*vote.Candidate, error) {
 	// Generate a new UUID for the candidate
 	candidateID := uuid.New().String()
-
+	log.Println("Candidate create postgres")
 	query := `
 		INSERT INTO 
 			candidate (

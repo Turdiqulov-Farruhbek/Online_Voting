@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package protos;
+
+option go_package = "/vote;vote";
+
+
+
+message Candidate {
+  string id = 1;  
+  string election_id = 2;   
+  string public_id = 3;   
+  string created_at = 4;  
+  string updated_at = 5;
+  int64 deleted_at = 6; 
+}
+message Void{}
+service CandidateService {
+  rpc Create(CandidateCreate) returns (Candidate){};
+  rpc Update(CandidateUpdate) returns (Void){};
+  rpc Delete(CandidateDelete) returns (Void){};
+  rpc GetById(CandidateById) returns (Candidate){};
+  rpc GetAll(GetAllCandidateReq) returns (GetAllCandidateRes){};
+}
+
+message CandidateCreate {
+  string election_id = 1; 
+  string public_id = 2; 
+}
+
+message CandidateUpdate {
+  string id = 1;
+  string election_id = 2; 
+  string public_id = 3; 
+}
+
+message CandidateDelete{
+  string id = 1;
+}
+
+message CandidateById{
+  string id = 1;
+}
+
+message GetAllCandidateReq{ 
+  string election_id = 1; 
+  string public_id = 2; 
+}
+
+message GetAllCandidateRes{
+  repeated Candidate candidates = 1;
+  int64 count = 2;
+}
