@@ -3,8 +3,9 @@ package postgres
 import (
 	"context"
 	"fmt"
-	"log"
 	"testing"
+	"time"
+
 	vote "vote/genproto"
 
 	"github.com/google/uuid"
@@ -12,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Create a test database connection pool
+// Create a test database connection pool for PublicVote
 func newTestPublicVote(t *testing.T) *PublicVote {
 	connString := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s",
 		"sayyidmuhammad",
@@ -32,17 +33,18 @@ func newTestPublicVote(t *testing.T) *PublicVote {
 // Create a test public vote object
 func createTestPublicVote() *vote.PublicVoteCreate {
 	return &vote.PublicVoteCreate{
-		ElectionId: "d2042066-6bee-4a3a-a4b6-52646e237773", // Replace with a valid election ID
-		PublicId:   uuid.NewString(),
+		ElectionId:  "d2042066-6bee-4a3a-a4b6-52646e237773",
+		PublicId:    uuid.New().String(),
+		CandidateId: "d63cf968-c2dd-49ab-82d2-443beac8dd50",
 	}
 }
 
+// TestCreatePublicVote tests the Create method
 func TestCreatePublicVote(t *testing.T) {
 	stgPublicVote := newTestPublicVote(t)
-
 	testPublicVote := createTestPublicVote()
 
-	publicVoteRes, err := stgPublicVote.Create(context.TODO(), testPublicVote)
+	publicVoteRes, err := stgPublicVote.Create(context.Background(), testPublicVote)
 	if err != nil {
 		t.Fatalf("Error creating public vote: %v", err)
 	}
@@ -52,49 +54,70 @@ func TestCreatePublicVote(t *testing.T) {
 	assert.Equal(t, testPublicVote.PublicId, publicVoteRes.PublicId)
 }
 
-func TestGetPublicVoteById(t *testing.T) {
+// TestGetByIdPublic tests the GetByIdPublic method
+func TestGetByIdPublic(t *testing.T) {
 	stgPublicVote := newTestPublicVote(t)
-
 	testPublicVote := createTestPublicVote()
-	createdPublicVote, err := stgPublicVote.Create(context.TODO(), testPublicVote)
+
+	createdPublicVote, err := stgPublicVote.Create(context.Background(), testPublicVote)
 	if err != nil {
 		t.Fatalf("Error creating public vote: %v", err)
 	}
 
-	publicVote, err := stgPublicVote.GetByPublicVoteId(context.TODO(), &vote.PublicVoteById{Id: createdPublicVote.Id})
+	publicVoteRes, err := stgPublicVote.GetByIdPublic(context.Background(), &vote.PublicVoteById{Id: createdPublicVote.Id})
 	if err != nil {
 		t.Fatalf("Error getting public vote by ID: %v", err)
 	}
 
-	assert.Equal(t, createdPublicVote.Id, publicVote.Id)
-	assert.Equal(t, createdPublicVote.ElectionId, publicVote.ElectionId)
-	assert.Equal(t, createdPublicVote.PublicId, publicVote.PublicId)
+	assert.Equal(t, createdPublicVote.Id, publicVoteRes.Id)
+	assert.Equal(t, createdPublicVote.ElectionId, publicVoteRes.ElectionId)
+	assert.Equal(t, createdPublicVote.PublicId, publicVoteRes.PublicId)
 }
 
-func TestGetAllPublicVotes(t *testing.T) {
+// TestGetAllPublic tests the GetAllPublic method
+func TestGetAllPublic(t *testing.T) {
 	stgPublicVote := newTestPublicVote(t)
+	testPublicVote := createTestPublicVote()
 
-	// Create multiple public votes for the same election
-	electionID := "d2042066-6bee-4a3a-a4b6-52646e237773"
-	for i := 0; i < 3; i++ {
-		testPublicVote := &vote.PublicVoteCreate{
-			ElectionId: electionID,
-			PublicId:   uuid.NewString(),
-		}
-		_, err := stgPublicVote.Create(context.TODO(), testPublicVote)
-		if err != nil {
-			t.Fatalf("Error creating public vote: %v", err)
-		}
+	_, err := stgPublicVote.Create(context.Background(), testPublicVote)
+	if err != nil {
+		t.Fatalf("Error creating public vote: %v", err)
 	}
 
-	publicVotesRes, err := stgPublicVote.GetAll(context.TODO(), &vote.GetAllPublicVoteReq{ElectionId: electionID})
+	publicVotes, err := stgPublicVote.GetAllPublic(context.Background(), &vote.GetAllPublicVoteReq{})
 	if err != nil {
 		t.Fatalf("Error getting all public votes: %v", err)
 	}
+	assert.GreaterOrEqual(t, len(publicVotes.PublicVotes), 1)
 
-	assert.GreaterOrEqual(t, publicVotesRes.Count, int32(3)) // At least 3 public votes created
-
-	for _, publicVote := range publicVotesRes.PublicVotes {
-		log.Println(publicVote)
+	publicVotesFiltered, err := stgPublicVote.GetAllPublic(context.Background(), &vote.GetAllPublicVoteReq{ElectionId: testPublicVote.ElectionId})
+	if err != nil {
+		t.Fatalf("Error getting all public votes with election ID filter: %v", err)
 	}
+	assert.GreaterOrEqual(t, len(publicVotesFiltered.PublicVotes), 1)
+}
+
+// TestGetAllVote tests the GetAllVote method
+func TestGetAllVote(t *testing.T) {
+	stgPublicVote := newTestPublicVote(t)
+	testPublicVote := createTestPublicVote()
+
+	_, err := stgPublicVote.Create(context.Background(), testPublicVote)
+	if err != nil {
+		t.Fatalf("Error creating public vote: %v", err)
+	}
+
+	time.Sleep(2 * time.Second)
+
+	allVotes, err := stgPublicVote.GetAllVote(context.Background(), &vote.GetAllVoteReq{})
+	if err != nil {
+		t.Fatalf("Error getting all votes: %v", err)
+	}
+	assert.GreaterOrEqual(t, len(allVotes.Votes), 1)
+
+	votesFiltered, err := stgPublicVote.GetAllVote(context.Background(), &vote.GetAllVoteReq{CandidateId: testPublicVote.CandidateId})
+	if err != nil {
+		t.Fatalf("Error getting all votes with candidate ID filter: %v", err)
+	}
+	assert.GreaterOrEqual(t, len(votesFiltered.Votes), 1)
 }

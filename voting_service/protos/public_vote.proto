@@ -4,31 +4,48 @@ package protos;
 option go_package = "/genproto;vote";
 
 
-message PublicVote {
+message PublicVoteRes {
   string id = 1; 
   string election_id = 2; 
   string public_id = 3; 
   string created_at = 4;
 }
 
+
+message VoteRes {
+  string id = 1; 
+  string created_at = 2;
+}
+
 service PublicVoteService {
   // Create a new public vote
-  rpc Create(PublicVoteCreate) returns (PublicVote) {};
+  rpc Create(PublicVoteCreate) returns (PublicVoteRes) {};
   // Get a public vote by its ID
-  rpc GetById(PublicVoteById) returns (PublicVote) {};
+  rpc GetByIdPublic(PublicVoteById) returns (PublicVoteRes) {};
+   // Get a vote by its ID
+  rpc GetByIdVote(VoteById) returns (VoteRes) {};
   // Get all public votes
-  rpc GetAll(GetAllPublicVoteReq) returns (GetAllPublicVoteRes) {};
+  rpc GetAllPublic(GetAllPublicVoteReq) returns (GetAllPublicVoteRes) {};
+  // Get all public votes
+  rpc GetAllVote(GetAllVoteReq) returns (GetAllVoteRes) {};
 
 }
 
 // Request for creating a new public vote
 message PublicVoteCreate {
-  string election_id = 1;
-  string public_id = 2; 
+  string id = 1;
+  string election_id = 2;
+  string public_id = 3; 
+  string candidate_id = 4;
 }
 
 // Request for getting a public vote by its ID
 message PublicVoteById {
+  string id = 1;
+}
+
+// Request for getting a public vote by its ID
+message VoteById {
   string id = 1;
 }
 
@@ -40,8 +57,22 @@ message GetAllPublicVoteReq {
   string public_id = 2; 
 }
 
+
+// Request for getting all public votes
+message GetAllVoteReq {
+  // Optinal filter for candidate ID
+  string candidate_id = 1;
+}
+
 // Response for getting all public votes
 message GetAllPublicVoteRes {
-  repeated PublicVote public_votes = 1;
+  repeated PublicVoteRes public_votes = 1;
+  int32 count = 2;
+}
+
+
+// Response for getting all votes
+message GetAllVoteRes {
+  repeated VoteRes votes = 1;
   int32 count = 2;
 }

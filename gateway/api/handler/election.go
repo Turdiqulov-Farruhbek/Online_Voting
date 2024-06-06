@@ -115,12 +115,12 @@ func (h *HandlerStruct) DeleteElectionHandler(c *gin.Context) {
 // @Tags Elections
 // @Accept json
 // @Produce json
-// @Param election body vote.ElectionById true "Request data"
+// @Param id query string true "Election ID"
 // @Success 200 {object} vote.Election
-// @Failure 400 {object} string "Invalid request body"
+// @Failure 400 {object} string "Invalid request parameters"
 // @Failure 404 {object} string "Resource not found"
 // @Failure 500 {object} string "Internal server error"
-// @Router /election/id [post]
+// @Router /election/id [get]
 func (h *HandlerStruct) GetElectionByIdHandler(c *gin.Context) {
 	var (
 		electionReq vote.ElectionById
@@ -130,10 +130,7 @@ func (h *HandlerStruct) GetElectionByIdHandler(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	if err = c.BindJSON(&electionReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Binding data: " + err.Error()})
-		return
-	}
+	electionReq.Id = c.Query("id")
 
 	electionRes, err := h.Election.GetById(ctx, &electionReq)
 	if err != nil {
@@ -149,11 +146,13 @@ func (h *HandlerStruct) GetElectionByIdHandler(c *gin.Context) {
 // @Tags Elections
 // @Accept json
 // @Produce json
-// @Param election body vote.GetAllElectionReq false "Request data"
+// @Param name query string false "Election name (optional)"
+// @Param open_date query string false "Open date (optional)"
+// @Param end_date query string false "End date (optional)"
 // @Success 200 {object} vote.GetAllElectionRes
-// @Failure 400 {object} string "Invalid request body"
+// @Failure 400 {object} string "Invalid request parameters"
 // @Failure 500 {object} string "Internal server error"
-// @Router /election/all [post]
+// @Router /election/all [get]
 func (h *HandlerStruct) GetAllElectionsHandler(c *gin.Context) {
 	var (
 		electionReq vote.GetAllElectionReq
@@ -163,10 +162,9 @@ func (h *HandlerStruct) GetAllElectionsHandler(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 50*time.Second)
 	defer cancel()
 
-	if err = c.BindJSON(&electionReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Binding data: " + err.Error()})
-		return
-	}
+	electionReq.Name = c.Query("name")
+	electionReq.OpenDate = c.Query("open_date")
+	electionReq.EndDate = c.Query("end_date")
 
 	electionRes, err := h.Election.GetAll(ctx, &electionReq)
 	if err != nil {
@@ -182,11 +180,11 @@ func (h *HandlerStruct) GetAllElectionsHandler(c *gin.Context) {
 // @Tags Elections
 // @Accept json
 // @Produce json
-// @Param election body vote.GetCandidateVotesReq true "Request data"
+// @Param id query string true "Election ID"
 // @Success 200 {object} vote.GetCandidateVotesRes
-// @Failure 400 {object} string "Invalid request body"
+// @Failure 400 {object} string "Invalid request parameters"
 // @Failure 500 {object} string "Internal server error"
-// @Router /election/results [post]
+// @Router /election/results [get]
 func (h *HandlerStruct) GetCandidateVotesHandler(c *gin.Context) {
 	var (
 		electionReq vote.GetCandidateVotesReq
@@ -196,10 +194,7 @@ func (h *HandlerStruct) GetCandidateVotesHandler(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	if err = c.BindJSON(&electionReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Binding data: " + err.Error()})
-		return
-	}
+	electionReq.Id = c.Query("id")
 
 	electionRes, err := h.Election.GetCandidateVoes(ctx, &electionReq)
 	if err != nil {

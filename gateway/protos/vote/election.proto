@@ -30,7 +30,7 @@ service ElectionService {
 }
 // Request for getting election reuslts
 message GetCandidateVotesReq{
-  string id = 1;
+  string id = 1; // election id 
 }
 // Response for getting election rusults
 message GetCandidateVotesRes{

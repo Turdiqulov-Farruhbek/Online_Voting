@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"log/slog"
 	vote "vote/genproto"
 	"vote/storage/postgres"
@@ -16,35 +17,52 @@ func NewPublicVoteService(stg *postgres.Storage) *PublicVoteService {
 	return &PublicVoteService{stg: stg}
 }
 
-func (p *PublicVoteService) Create(ctx context.Context, voteReq *vote.PublicVoteCreate) (*vote.PublicVote, error) {
-	slog.Info("CreatePublicVote Service", "public vote", voteReq)
-	voteRes, err := p.stg.PublicVoteS.Create(ctx, voteReq)
+func (s *PublicVoteService) Create(ctx context.Context, req *vote.PublicVoteCreate) (*vote.PublicVoteRes, error) {
+	slog.Info("PublicVoteService Create", "req", req)
+	res, err := s.stg.PublicVoteS.Create(ctx, req)
 	if err != nil {
-		slog.Error("error while CreatePublicVote Service", "err", err)
+		slog.Error("error while PublicVoteService Create", "err", err)
 		return nil, err
 	}
-
-	return voteRes, nil
+	return res, nil
 }
 
-func (p *PublicVoteService) GetAll(ctx context.Context, voteReq *vote.GetAllPublicVoteReq) (*vote.GetAllPublicVoteRes, error) {
-	slog.Info("GetAllPublicVote Service", "public vote req", voteReq)
-	voteRes, err := p.stg.PublicVoteS.GetAll(ctx, voteReq)
+func (s *PublicVoteService) GetByIdPublic(ctx context.Context, req *vote.PublicVoteById) (*vote.PublicVoteRes, error) {
+	slog.Info("PublicVoteService GetByIdPublic", "req", req)
+	res, err := s.stg.PublicVoteS.GetByIdPublic(ctx, req)
 	if err != nil {
-		slog.Error("error while GetAllPublicVote Service", "err", err)
+		slog.Error("error while PublicVoteService GetByIdPublic", "err", err)
 		return nil, err
 	}
-
-	return voteRes, nil
+	return res, nil
 }
 
-func (p *PublicVoteService) GetById(ctx context.Context, voteReq *vote.PublicVoteById) (*vote.PublicVote, error) {
-	slog.Info("GetPublicVoteById Service", "public vote id", voteReq.Id)
-	voteRes, err := p.stg.PublicVoteS.GetByPublicVoteId(ctx, voteReq)
+func (s *PublicVoteService) GetByIdVote(ctx context.Context, req *vote.VoteById) (*vote.VoteRes, error) {
+	slog.Info("PublicVoteService GetByIdVote", "req", req)
+	res, err := s.stg.PublicVoteS.GetByIdVote(ctx, req)
 	if err != nil {
-		slog.Error("error while GetPublicVoteById Service", "err", err)
+		slog.Error("error while PublicVoteService GetByIdVote", "err", err)
 		return nil, err
 	}
+	return res, nil
+}
 
-	return voteRes, nil
+func (s *PublicVoteService) GetAllPublic(ctx context.Context, req *vote.GetAllPublicVoteReq) (*vote.GetAllPublicVoteRes, error) {
+	slog.Info("PublicVoteService GetAllPublic", "req", req)
+	res, err := s.stg.PublicVoteS.GetAllPublic(ctx, req)
+	if err != nil {
+		slog.Error("error while PublicVoteService GetAllPublic", "err", err)
+		return nil, err
+	}
+	return res, nil
+}
+
+func (s *PublicVoteService) GetAllVote(ctx context.Context, req *vote.GetAllVoteReq) (*vote.GetAllVoteRes, error) {
+	slog.Info("PublicVoteService GetAllVote", "req", req)
+	res, err := s.stg.PublicVoteS.GetAllVote(ctx, req)
+	if err != nil {
+		slog.Error("error while PublicVoteService GetAllVote", "err", err)
+		return nil, err
+	}
+	return res, nil
 }

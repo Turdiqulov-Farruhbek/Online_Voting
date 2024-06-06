@@ -28,12 +28,12 @@ func NewGin(connVote *grpc.ClientConn) *gin.Engine {
 	// Election routes
 	election := router.Group("api/v1/election")
 	{
-		election.POST("", handler.CreateElectionHandler)            // POST /api/v1/election
-		election.PUT("", handler.UpdateElectionHandler)             // PUT /api/v1/election
-		election.DELETE("", handler.DeleteElectionHandler)          // DELETE /api/v1/election
-		election.POST("/id", handler.GetElectionByIdHandler)        // GET /api/v1/election/id
-		election.POST("/all", handler.GetAllElectionsHandler)       // GET /api/v1/election/all
-		election.POST("/results", handler.GetCandidateVotesHandler) // POST /api/v1/election/results
+		election.POST("", handler.CreateElectionHandler)           // POST /api/v1/election
+		election.PUT("", handler.UpdateElectionHandler)            // PUT /api/v1/election
+		election.DELETE("", handler.DeleteElectionHandler)         // DELETE /api/v1/election
+		election.GET("/id", handler.GetElectionByIdHandler)        // GET /api/v1/election/id
+		election.GET("/all", handler.GetAllElectionsHandler)       // GET /api/v1/election/all
+		election.GET("/results", handler.GetCandidateVotesHandler) // POST /api/v1/election/results
 	}
 
 	candidate := router.Group("/api/v1/candidate")
@@ -44,6 +44,13 @@ func NewGin(connVote *grpc.ClientConn) *gin.Engine {
 		candidate.POST("/id", handler.GetCandidateByIdHandler)  // POST /api/v1/candidate/id
 		candidate.POST("/all", handler.GetAllCandidatesHandler) // POST /api/v1/candidate/all
 	}
-
+	publicVote := router.Group("/api/v1/public_vote")
+	{
+		publicVote.POST("", handler.CreatePublicVoteHandler)                 // POST /api/v1/public_vote
+		publicVote.GET("/public/id", handler.GetPublicVoteByPublicIdHandler) // GET /api/v1/public_vote/public/id
+		publicVote.GET("/vote/id", handler.GetPublicVoteByVoteIdHandler)     // GET /api/v1/public_vote/vote/id
+		publicVote.GET("/public/all", handler.GetAllPublicVotesHandler)      // GET /api/v1/public_vote/public/all
+		publicVote.GET("/vote/all", handler.GetAllVotesHandler)              // GET /api/v1/public_vote/vote/all
+	}
 	return router
 }

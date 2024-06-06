@@ -115,12 +115,12 @@ func (h *HandlerStruct) DeleteCandidateHandler(c *gin.Context) {
 // @Tags Candidates
 // @Accept json
 // @Produce json
-// @Param candidate body vote.CandidateById true "Request data"
+// @Param id query string true "Candidate ID"
 // @Success 200 {object} vote.Candidate
-// @Failure 400 {object} string "Invalid request body"
+// @Failure 400 {object} string "Invalid request parameters"
 // @Failure 404 {object} string "Resource not found"
 // @Failure 500 {object} string "Internal server error"
-// @Router /candidate/id [post]
+// @Router /candidate/id [get]
 func (h *HandlerStruct) GetCandidateByIdHandler(c *gin.Context) {
 	var (
 		candidateReq vote.CandidateById
@@ -130,10 +130,7 @@ func (h *HandlerStruct) GetCandidateByIdHandler(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
 
-	if err = c.BindJSON(&candidateReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Binding data: " + err.Error()})
-		return
-	}
+	candidateReq.Id = c.Query("id")
 
 	candidateRes, err := h.Candidate.GetById(ctx, &candidateReq)
 	if err != nil {
@@ -149,11 +146,12 @@ func (h *HandlerStruct) GetCandidateByIdHandler(c *gin.Context) {
 // @Tags Candidates
 // @Accept json
 // @Produce json
-// @Param candidate body vote.GetAllCandidateReq false "Request data"
+// @Param election_id query string true "Election ID"
+// @Param public_id query string false "Public ID (optional)"
 // @Success 200 {object} vote.GetAllCandidateRes
-// @Failure 400 {object} string "Invalid request body"
+// @Failure 400 {object} string "Invalid request parameters"
 // @Failure 500 {object} string "Internal server error"
-// @Router /candidate/all [post]
+// @Router /candidate/all [get]
 func (h *HandlerStruct) GetAllCandidatesHandler(c *gin.Context) {
 	var (
 		candidateReq vote.GetAllCandidateReq
@@ -163,10 +161,8 @@ func (h *HandlerStruct) GetAllCandidatesHandler(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 50*time.Second)
 	defer cancel()
 
-	if err = c.BindJSON(&candidateReq); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error Binding data: " + err.Error()})
-		return
-	}
+	candidateReq.ElectionId = c.Query("election_id")
+	candidateReq.PublicId = c.Query("public_id")
 
 	candidateRes, err := h.Candidate.GetAll(ctx, &candidateReq)
 	if err != nil {

@@ -15,7 +15,6 @@ type Storage struct {
 	CandidateS  storage.CandidateI
 	ElectionS   storage.ElectionI
 	PublicVoteS storage.PublicVoteI
-	VoteS       storage.VoteI
 }
 
 func DBConn() (*Storage, error) {
@@ -44,12 +43,10 @@ func DBConn() (*Storage, error) {
 	cd := NewCandidate(db)
 	el := NewElection(db)
 	pbv := NewPublicVote(db)
-	vt := NewVote(db)
 	return &Storage{
 		CandidateS:  cd,
 		ElectionS:   el,
 		PublicVoteS: pbv,
-		VoteS:       vt,
 	}, err
 }
 
@@ -65,13 +62,6 @@ func (s *Storage) Candidate() storage.CandidateI {
 		s.CandidateS = NewCandidate(s.Db)
 	}
 	return s.CandidateS
-}
-
-func (s *Storage) Vote() storage.VoteI {
-	if s.VoteS == nil {
-		s.VoteS = NewVote(s.Db)
-	}
-	return s.VoteS
 }
 
 func (s *Storage) PublicVote() storage.PublicVoteI {

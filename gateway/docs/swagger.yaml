@@ -15,11 +15,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  vote.CandidateById:
-    properties:
-      id:
-        type: string
-    type: object
   vote.CandidateCreate:
     properties:
       election_id:
@@ -65,11 +60,6 @@ definitions:
       updated_at:
         type: string
     type: object
-  vote.ElectionById:
-    properties:
-      id:
-        type: string
-    type: object
   vote.ElectionCreate:
     properties:
       end_date:
@@ -95,13 +85,6 @@ definitions:
       open_date:
         type: string
     type: object
-  vote.GetAllCandidateReq:
-    properties:
-      election_id:
-        type: string
-      public_id:
-        type: string
-    type: object
   vote.GetAllCandidateRes:
     properties:
       candidates:
@@ -110,15 +93,6 @@ definitions:
         type: array
       count:
         type: integer
-    type: object
-  vote.GetAllElectionReq:
-    properties:
-      end_date:
-        type: string
-      name:
-        type: string
-      open_date:
-        type: string
     type: object
   vote.GetAllElectionRes:
     properties:
@@ -129,10 +103,23 @@ definitions:
           $ref: '#/definitions/vote.Election'
         type: array
     type: object
-  vote.GetCandidateVotesReq:
+  vote.GetAllPublicVoteRes:
     properties:
-      id:
-        type: string
+      count:
+        type: integer
+      public_votes:
+        items:
+          $ref: '#/definitions/vote.PublicVoteRes'
+        type: array
+    type: object
+  vote.GetAllVoteRes:
+    properties:
+      count:
+        type: integer
+      votes:
+        items:
+          $ref: '#/definitions/vote.VoteRes'
+        type: array
     type: object
   vote.GetCandidateVotesRes:
     properties:
@@ -141,7 +128,36 @@ definitions:
           $ref: '#/definitions/vote.CandidateElectionRes'
         type: array
     type: object
+  vote.PublicVoteCreate:
+    properties:
+      candidate_id:
+        type: string
+      election_id:
+        type: string
+      id:
+        type: string
+      public_id:
+        type: string
+    type: object
+  vote.PublicVoteRes:
+    properties:
+      created_at:
+        type: string
+      election_id:
+        type: string
+      id:
+        type: string
+      public_id:
+        type: string
+    type: object
   vote.Void:
+    type: object
+  vote.VoteRes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -247,16 +263,20 @@ paths:
       tags:
       - Candidates
   /candidate/all:
-    post:
+    get:
       consumes:
       - application/json
       description: Retrieves all candidates associated with an election.
       parameters:
-      - description: Request data
-        in: body
-        name: candidate
-        schema:
-          $ref: '#/definitions/vote.GetAllCandidateReq'
+      - description: Election ID
+        in: query
+        name: election_id
+        required: true
+        type: string
+      - description: Public ID (optional)
+        in: query
+        name: public_id
+        type: string
       produces:
       - application/json
       responses:
@@ -265,7 +285,7 @@ paths:
           schema:
             $ref: '#/definitions/vote.GetAllCandidateRes'
         "400":
-          description: Invalid request body
+          description: Invalid request parameters
           schema:
             type: string
         "500":
@@ -276,17 +296,16 @@ paths:
       tags:
       - Candidates
   /candidate/id:
-    post:
+    get:
       consumes:
       - application/json
       description: Retrieves a candidate by its ID.
       parameters:
-      - description: Request data
-        in: body
-        name: candidate
+      - description: Candidate ID
+        in: query
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/vote.CandidateById'
+        type: string
       produces:
       - application/json
       responses:
@@ -295,7 +314,7 @@ paths:
           schema:
             $ref: '#/definitions/vote.Candidate'
         "400":
-          description: Invalid request body
+          description: Invalid request parameters
           schema:
             type: string
         "404":
@@ -406,16 +425,23 @@ paths:
       tags:
       - Elections
   /election/all:
-    post:
+    get:
       consumes:
       - application/json
       description: Retrieves all elections.
       parameters:
-      - description: Request data
-        in: body
-        name: election
-        schema:
-          $ref: '#/definitions/vote.GetAllElectionReq'
+      - description: Election name (optional)
+        in: query
+        name: name
+        type: string
+      - description: Open date (optional)
+        in: query
+        name: open_date
+        type: string
+      - description: End date (optional)
+        in: query
+        name: end_date
+        type: string
       produces:
       - application/json
       responses:
@@ -424,7 +450,7 @@ paths:
           schema:
             $ref: '#/definitions/vote.GetAllElectionRes'
         "400":
-          description: Invalid request body
+          description: Invalid request parameters
           schema:
             type: string
         "500":
@@ -435,17 +461,16 @@ paths:
       tags:
       - Elections
   /election/id:
-    post:
+    get:
       consumes:
       - application/json
       description: Retrieves an election by its ID.
       parameters:
-      - description: Request data
-        in: body
-        name: election
+      - description: Election ID
+        in: query
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/vote.ElectionById'
+        type: string
       produces:
       - application/json
       responses:
@@ -454,7 +479,7 @@ paths:
           schema:
             $ref: '#/definitions/vote.Election'
         "400":
-          description: Invalid request body
+          description: Invalid request parameters
           schema:
             type: string
         "404":
@@ -469,17 +494,16 @@ paths:
       tags:
       - Elections
   /election/results:
-    post:
+    get:
       consumes:
       - application/json
       description: Retrieves the results of an election by its ID.
       parameters:
-      - description: Request data
-        in: body
-        name: election
+      - description: Election ID
+        in: query
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/vote.GetCandidateVotesReq'
+        type: string
       produces:
       - application/json
       responses:
@@ -488,7 +512,7 @@ paths:
           schema:
             $ref: '#/definitions/vote.GetCandidateVotesRes'
         "400":
-          description: Invalid request body
+          description: Invalid request parameters
           schema:
             type: string
         "500":
@@ -498,4 +522,160 @@ paths:
       summary: Get election results
       tags:
       - Elections
+  /public_vote:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new public vote.
+      parameters:
+      - description: Public vote data
+        in: body
+        name: public_vote
+        required: true
+        schema:
+          $ref: '#/definitions/vote.PublicVoteCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.PublicVoteRes'
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create a new public vote
+      tags:
+      - Public Votes
+  /public_vote/public/all:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all public votes.
+      parameters:
+      - description: Election ID (optional)
+        in: query
+        name: election_id
+        type: string
+      - description: Public ID (optional)
+        in: query
+        name: public_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.GetAllPublicVoteRes'
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get all public votes
+      tags:
+      - Public Votes
+  /public_vote/public/id:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a public vote by its ID.
+      parameters:
+      - description: Public vote ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.PublicVoteRes'
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get a public vote by public vote ID
+      tags:
+      - Public Votes
+  /public_vote/vote/all:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all votes.
+      parameters:
+      - description: Candidate ID (optional)
+        in: query
+        name: candidate_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.GetAllVoteRes'
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get all votes
+      tags:
+      - Public Votes
+  /public_vote/vote/id:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a public vote by its ID.
+      parameters:
+      - description: Vote ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/vote.VoteRes'
+        "400":
+          description: Invalid request parameters
+          schema:
+            type: string
+        "404":
+          description: Resource not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get a public vote by vote ID
+      tags:
+      - Public Votes
 swagger: "2.0"

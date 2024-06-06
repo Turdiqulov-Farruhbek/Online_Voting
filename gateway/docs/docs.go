@@ -162,7 +162,7 @@ const docTemplate = `{
             }
         },
         "/candidate/all": {
-            "post": {
+            "get": {
                 "description": "Retrieves all candidates associated with an election.",
                 "consumes": [
                     "application/json"
@@ -176,12 +176,17 @@ const docTemplate = `{
                 "summary": "Get all candidates",
                 "parameters": [
                     {
-                        "description": "Request data",
-                        "name": "candidate",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vote.GetAllCandidateReq"
-                        }
+                        "type": "string",
+                        "description": "Election ID",
+                        "name": "election_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Public ID (optional)",
+                        "name": "public_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -192,7 +197,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid request body",
+                        "description": "Invalid request parameters",
                         "schema": {
                             "type": "string"
                         }
@@ -207,7 +212,7 @@ const docTemplate = `{
             }
         },
         "/candidate/id": {
-            "post": {
+            "get": {
                 "description": "Retrieves a candidate by its ID.",
                 "consumes": [
                     "application/json"
@@ -221,13 +226,11 @@ const docTemplate = `{
                 "summary": "Get a candidate by its ID",
                 "parameters": [
                     {
-                        "description": "Request data",
-                        "name": "candidate",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vote.CandidateById"
-                        }
+                        "type": "string",
+                        "description": "Candidate ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -238,7 +241,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid request body",
+                        "description": "Invalid request parameters",
                         "schema": {
                             "type": "string"
                         }
@@ -405,7 +408,7 @@ const docTemplate = `{
             }
         },
         "/election/all": {
-            "post": {
+            "get": {
                 "description": "Retrieves all elections.",
                 "consumes": [
                     "application/json"
@@ -419,12 +422,22 @@ const docTemplate = `{
                 "summary": "Get all elections",
                 "parameters": [
                     {
-                        "description": "Request data",
-                        "name": "election",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/vote.GetAllElectionReq"
-                        }
+                        "type": "string",
+                        "description": "Election name (optional)",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Open date (optional)",
+                        "name": "open_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date (optional)",
+                        "name": "end_date",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -435,7 +448,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid request body",
+                        "description": "Invalid request parameters",
                         "schema": {
                             "type": "string"
                         }
@@ -450,7 +463,7 @@ const docTemplate = `{
             }
         },
         "/election/id": {
-            "post": {
+            "get": {
                 "description": "Retrieves an election by its ID.",
                 "consumes": [
                     "application/json"
@@ -464,13 +477,11 @@ const docTemplate = `{
                 "summary": "Get an election by its ID",
                 "parameters": [
                     {
-                        "description": "Request data",
-                        "name": "election",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vote.ElectionById"
-                        }
+                        "type": "string",
+                        "description": "Election ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -481,7 +492,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid request body",
+                        "description": "Invalid request parameters",
                         "schema": {
                             "type": "string"
                         }
@@ -502,7 +513,7 @@ const docTemplate = `{
             }
         },
         "/election/results": {
-            "post": {
+            "get": {
                 "description": "Retrieves the results of an election by its ID.",
                 "consumes": [
                     "application/json"
@@ -516,13 +527,11 @@ const docTemplate = `{
                 "summary": "Get election results",
                 "parameters": [
                     {
-                        "description": "Request data",
-                        "name": "election",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/vote.GetCandidateVotesReq"
-                        }
+                        "type": "string",
+                        "description": "Election ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -533,7 +542,245 @@ const docTemplate = `{
                         }
                     },
                     "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/public_vote": {
+            "post": {
+                "description": "Creates a new public vote.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Votes"
+                ],
+                "summary": "Create a new public vote",
+                "parameters": [
+                    {
+                        "description": "Public vote data",
+                        "name": "public_vote",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/vote.PublicVoteCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vote.PublicVoteRes"
+                        }
+                    },
+                    "400": {
                         "description": "Invalid request body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/public_vote/public/all": {
+            "get": {
+                "description": "Retrieves all public votes.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Votes"
+                ],
+                "summary": "Get all public votes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Election ID (optional)",
+                        "name": "election_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Public ID (optional)",
+                        "name": "public_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vote.GetAllPublicVoteRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/public_vote/public/id": {
+            "get": {
+                "description": "Retrieves a public vote by its ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Votes"
+                ],
+                "summary": "Get a public vote by public vote ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Public vote ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vote.PublicVoteRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/public_vote/vote/all": {
+            "get": {
+                "description": "Retrieves all votes.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Votes"
+                ],
+                "summary": "Get all votes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Candidate ID (optional)",
+                        "name": "candidate_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vote.GetAllVoteRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/public_vote/vote/id": {
+            "get": {
+                "description": "Retrieves a public vote by its ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Votes"
+                ],
+                "summary": "Get a public vote by vote ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Vote ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/vote.VoteRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
                         "schema": {
                             "type": "string"
                         }
@@ -568,14 +815,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "vote.CandidateById": {
-            "type": "object",
-            "properties": {
-                "id": {
                     "type": "string"
                 }
             }
@@ -650,14 +889,6 @@ const docTemplate = `{
                 }
             }
         },
-        "vote.ElectionById": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "vote.ElectionCreate": {
             "type": "object",
             "properties": {
@@ -697,17 +928,6 @@ const docTemplate = `{
                 }
             }
         },
-        "vote.GetAllCandidateReq": {
-            "type": "object",
-            "properties": {
-                "election_id": {
-                    "type": "string"
-                },
-                "public_id": {
-                    "type": "string"
-                }
-            }
-        },
         "vote.GetAllCandidateRes": {
             "type": "object",
             "properties": {
@@ -719,20 +939,6 @@ const docTemplate = `{
                 },
                 "count": {
                     "type": "integer"
-                }
-            }
-        },
-        "vote.GetAllElectionReq": {
-            "type": "object",
-            "properties": {
-                "end_date": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "open_date": {
-                    "type": "string"
                 }
             }
         },
@@ -750,11 +956,31 @@ const docTemplate = `{
                 }
             }
         },
-        "vote.GetCandidateVotesReq": {
+        "vote.GetAllPublicVoteRes": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "string"
+                "count": {
+                    "type": "integer"
+                },
+                "public_votes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vote.PublicVoteRes"
+                    }
+                }
+            }
+        },
+        "vote.GetAllVoteRes": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "votes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/vote.VoteRes"
+                    }
                 }
             }
         },
@@ -769,8 +995,53 @@ const docTemplate = `{
                 }
             }
         },
+        "vote.PublicVoteCreate": {
+            "type": "object",
+            "properties": {
+                "candidate_id": {
+                    "type": "string"
+                },
+                "election_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "public_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "vote.PublicVoteRes": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "election_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "public_id": {
+                    "type": "string"
+                }
+            }
+        },
         "vote.Void": {
             "type": "object"
+        },
+        "vote.VoteRes": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`

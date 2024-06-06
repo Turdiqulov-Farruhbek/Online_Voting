@@ -12,7 +12,6 @@ type HandlerStruct struct {
 	Candidate  vote.CandidateServiceClient
 	Election   vote.ElectionServiceClient
 	PublicVote vote.PublicVoteServiceClient
-	Vote       vote.VoteServiceClient
 }
 
 func NewHandler(connVote *grpc.ClientConn) *HandlerStruct {
@@ -22,6 +21,5 @@ func NewHandler(connVote *grpc.ClientConn) *HandlerStruct {
 		Candidate:  vote.NewCandidateServiceClient(connVote),
 		Election:   vote.NewElectionServiceClient(connVote),
 		PublicVote: vote.NewPublicVoteServiceClient(connVote),
-		Vote:       vote.NewVoteServiceClient(connVote),
 	}
 }
