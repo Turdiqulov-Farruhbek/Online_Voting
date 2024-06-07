@@ -3,6 +3,8 @@ module github.com/myfirstgo/online_voting_service/public_service
 go 1.22.1
 
 require (
+	github.com/go-playground/assert v1.2.1
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cast v1.6.0
